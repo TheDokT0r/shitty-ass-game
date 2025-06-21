@@ -1,0 +1,14 @@
+.puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto); /* adjust for cols */
+  gap: 2px;
+  justify-content: center;
+  margin-top: 20px;
+  img {
+    width: 100%; /* scale images naturally */
+    // max-width: 120px;
+    height: auto;
+    object-fit: cover;
+    border: 1px solid #ccc;
+  }
+}
