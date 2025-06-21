@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Piece from "./Piece";
+import useTimer from "../hooks/useTimer";
 
 interface PuzzleProps {
   imageSrc: string;
@@ -11,8 +12,15 @@ interface PuzzleProps {
   puzzleTime: number;
 }
 
-export default function Puzzle({ imageSrc, gridSize, onWin, onLose, puzzleTime }: PuzzleProps) {
+export default function Puzzle({
+  imageSrc,
+  gridSize,
+  onWin,
+  onLose,
+  puzzleTime,
+}: PuzzleProps) {
   const [pieces, setPieces] = useState<number[]>([]);
+  const timeLeft = useTimer(puzzleTime, onLose);
 
   useEffect(() => {
     const arr = Array.from({ length: gridSize * gridSize }, (_, i) => i);
@@ -31,23 +39,28 @@ export default function Puzzle({ imageSrc, gridSize, onWin, onLose, puzzleTime }
     setPieces((prevPieces) => {
       const newPieces = [...prevPieces];
       [newPieces[from], newPieces[to]] = [newPieces[to], newPieces[from]];
+      if (newPieces.every((p, i) => p === i)) {
+          console.log("a")
+        onWin();
+      }
       return newPieces;
     });
+
   };
 
-  const isSolved = pieces.every((p, i) => p === i);
-
-  const shuffle = () => {
-    const arr = Array.from({ length: gridSize * gridSize }, (_, i) => i);
-    shuffleArray(arr);
-    setPieces(arr);
-  };
+  useEffect(() => {
+    const shuffle = () => {
+      const arr = Array.from({ length: gridSize * gridSize }, (_, i) => i);
+      shuffleArray(arr);
+      setPieces(arr);
+    };
+    shuffle();
+  }, [gridSize]);
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div style={{ maxWidth: 400, margin: "auto", fontFamily: "sans-serif" }}>
-        <h2>Image Puzzle</h2>
-        <button onClick={shuffle}>Shuffle</button>
+        <h3>Time left: {timeLeft}s</h3>
 
         <div
           style={{
@@ -72,10 +85,6 @@ export default function Puzzle({ imageSrc, gridSize, onWin, onLose, puzzleTime }
             />
           ))}
         </div>
-
-        <p style={{ marginTop: 10, color: isSolved ? "green" : "black" }}>
-          {isSolved ? "🎉 Puzzle Solved!" : "Drag pieces to swap them."}
-        </p>
       </div>
     </DndProvider>
   );
