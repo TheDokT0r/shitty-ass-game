@@ -3,9 +3,14 @@ import { useEffect, useState } from "react";
 export default function useCountdown(seconds: number, onEnd: () => void) {
   const [timeLeft, setTimeLeft] = useState(seconds);
 
+  const restartTimer = () => {
+    setTimeLeft(seconds);
+  }
+
   useEffect(() => {
     if (timeLeft <= 0) {
       onEnd();
+      restartTimer();
       return;
     }
 
@@ -21,5 +26,5 @@ export default function useCountdown(seconds: number, onEnd: () => void) {
     return () => clearInterval(interval);
   }, [timeLeft, onEnd]);
 
-  return timeLeft;
+  return {timeLeft, restartTimer};
 }

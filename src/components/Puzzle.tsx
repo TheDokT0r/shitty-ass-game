@@ -20,7 +20,7 @@ export default function Puzzle({
   puzzleTime,
 }: PuzzleProps) {
   const [pieces, setPieces] = useState<number[]>([]);
-  const timeLeft = useTimer(puzzleTime, onLose);
+  const { timeLeft } = useTimer(puzzleTime, onLose);
 
   useEffect(() => {
     const arr = Array.from({ length: gridSize * gridSize }, (_, i) => i);
@@ -40,12 +40,11 @@ export default function Puzzle({
       const newPieces = [...prevPieces];
       [newPieces[from], newPieces[to]] = [newPieces[to], newPieces[from]];
       if (newPieces.every((p, i) => p === i)) {
-          console.log("a")
+        console.log("a");
         onWin();
       }
       return newPieces;
     });
-
   };
 
   useEffect(() => {
@@ -55,7 +54,7 @@ export default function Puzzle({
       setPieces(arr);
     };
     shuffle();
-  }, [gridSize]);
+  }, [gridSize, imageSrc]);
 
   return (
     <DndProvider backend={HTML5Backend}>

@@ -1,32 +1,63 @@
 import { useState } from "react";
-import bigYoshi from "./assets/bigYoshi.jpeg";
 import Puzzle from "./components/Puzzle";
-
-const GRID_SIZE = 3; // 3x3 puzzle
-
-const allPuzzles: string[] = [
-  bigYoshi,
-]; 
+import images from "./loadImages";
+import EndScreen from "./components/EndScreen";
+import StartScreen from "./components/StartScreen";
 
 export default function App() {
+  const [gameStarted, setStartGame] = useState(false);
   const [puzzlesSolved, setPuzzlesSolved] = useState(0);
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
+  const [currentPuzzleTime, setCurrentPuzzleTime] = useState(images.length + 4);
+  const [gridSize, setGridSize] = useState(3);
+
+  const onStartGame = () => {
+    setPuzzlesSolved(0);
+    setCurrentPuzzleIndex(0);
+    setCurrentPuzzleTime(images.length + 4);
+    setGridSize(3);
+    setStartGame(true);
+  };
 
   const onWin = () => {
+    onNextPuzzle();
     setPuzzlesSolved(puzzlesSolved + 1);
+    setCurrentPuzzleIndex(currentPuzzleIndex + 1);
+    setGridSize(gridSize + 1);
+  };
+
+  const onLose = () => {
+    onNextPuzzle();
     setCurrentPuzzleIndex(currentPuzzleIndex + 1);
   };
 
-  const onLose = () => {};
+  const onNextPuzzle = () => {
+    setCurrentPuzzleTime(currentPuzzleTime - 1);
+  };
 
-  console.log(currentPuzzleIndex)
+  if (!gameStarted) {
+    return <StartScreen onStartGame={onStartGame} />;
+  }
+
+  if (currentPuzzleIndex >= images.length) {
+    return (
+      <EndScreen
+        puzzlesLength={images.length}
+        puzzlesSolvedCorrectly={puzzlesSolved}
+        onRestart={onStartGame}
+      />
+    );
+  }
 
   return (
-    <div>
-      <h2>Puzzles Solved: {puzzlesSolved}/{allPuzzles.length}</h2>
+    <div style={{ display: "grid", placeItems: "center", textAlign: "center" }}>
+      <h2>
+        Puzzles Solved: {puzzlesSolved}/{images.length}
+      </h2>
+      <h3>Puzzles Left: {images.length - currentPuzzleIndex}</h3>
       <Puzzle
-        imageSrc={allPuzzles[currentPuzzleIndex]}
-        gridSize={GRID_SIZE}
+        imageSrc={images[currentPuzzleIndex]}
+        gridSize={gridSize}
         onWin={onWin}
         onLose={onLose}
         puzzleTime={10}
