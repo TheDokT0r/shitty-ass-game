@@ -1,0 +1,7 @@
+services:
+  game:
+    container_name: game
+    build: .
+    ports:
+      - 9001:80
+    restart: unless-stopped
